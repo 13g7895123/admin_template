@@ -14,23 +14,41 @@ module.exports = {
     'lg:ml-20',
     'lg:ml-70',
     'w-20',
-    'w-70'
+    'w-70',
+    // Primary color classes
+    'bg-primary',
+    'bg-primary-50',
+    'bg-primary-100',
+    'bg-primary-500',
+    'bg-primary-600',
+    'text-primary',
+    'text-primary-400',
+    'text-primary-500',
+    'text-primary-600',
+    'border-primary',
+    'border-primary-500',
+    'hover:bg-primary-600',
+    'hover:text-primary-500',
+    'hover:text-primary-600',
+    'focus:ring-primary-500',
+    'focus:border-primary-500'
   ],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: 'var(--primary-color)',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: 'var(--primary-50)',
+          100: 'var(--primary-100)',
+          200: 'var(--primary-200)',
+          300: 'var(--primary-300)',
+          400: 'var(--primary-400)',
+          500: 'var(--primary-500)',
+          600: 'var(--primary-600)',
+          700: 'var(--primary-700)',
+          800: 'var(--primary-800)',
+          900: 'var(--primary-900)',
+          DEFAULT: 'var(--primary-500)'
         }
       },
       spacing: {

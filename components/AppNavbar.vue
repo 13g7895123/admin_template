@@ -1,15 +1,56 @@
 <template>
   <header class="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between">
-    <!-- Mobile hamburger button -->
-    <button
-      @click="toggleMobileSidebar"
-      class="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-    >
-      <Bars3Icon class="w-6 h-6" />
-    </button>
+    <!-- Left side - Mobile hamburger or Breadcrumb -->
+    <div class="flex items-center space-x-4">
+      <!-- Mobile hamburger button -->
+      <button
+        @click="toggleMobileSidebar"
+        class="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+      >
+        <Bars3Icon class="w-6 h-6" />
+      </button>
 
-    <!-- Empty space on desktop (content is in breadcrumb) -->
-    <div class="hidden lg:block"></div>
+      <!-- Breadcrumb (Desktop only) -->
+      <div class="hidden lg:flex items-center space-x-4">
+        <!-- Current Page Title -->
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+          {{ currentPageTitle }}
+        </h1>
+        
+        <!-- Separator -->
+        <div class="h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+        
+        <!-- Breadcrumb Navigation -->
+        <nav class="flex" aria-label="Breadcrumb">
+          <ol class="flex items-center space-x-2 text-sm">
+            <li>
+              <NuxtLink
+                to="/"
+                class="text-gray-500 dark:text-gray-400 hover:text-primary-500 transition-colors duration-200"
+              >
+                {{ t('common.home') }}
+              </NuxtLink>
+            </li>
+            <li v-for="(item, index) in breadcrumbItems" :key="index" class="flex items-center">
+              <ChevronRightIcon class="w-4 h-4 mx-2 text-gray-400" />
+              <NuxtLink
+                v-if="item.href && index < breadcrumbItems.length - 1"
+                :to="item.href"
+                class="text-gray-500 dark:text-gray-400 hover:text-primary-500 transition-colors duration-200"
+              >
+                {{ item.name }}
+              </NuxtLink>
+              <span
+                v-else
+                class="text-gray-700 dark:text-gray-300 font-medium"
+              >
+                {{ item.name }}
+              </span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
 
     <!-- Right side icons -->
     <div class="flex items-center space-x-3">
@@ -252,6 +293,7 @@ import {
   MoonIcon,
   BellIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   ExclamationCircleIcon,
   UserPlusIcon,
   DocumentTextIcon,
@@ -261,6 +303,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const { t, locale, locales } = useI18n()
+const route = useRoute()
 const sidebarStore = useSidebarStore()
 const { toggleMobileSidebar } = sidebarStore
 
@@ -269,6 +312,64 @@ const { recentNotifications, unreadCount, markAsRead, markAllAsRead, clearReadNo
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
+
+// Breadcrumb logic
+const pageTitle = computed(() => {
+  const titles = {
+    '/': t('nav.dashboard'),
+    '/dashboard': t('nav.dashboard'),
+    '/dashboard/analytics': t('nav.analytics'),
+    '/dashboard/crm': t('nav.crm'),
+    '/dashboard/ecommerce': t('nav.ecommerce'),
+    '/settings': t('nav.settings'),
+    '/settings/general': t('nav.general_settings'),
+    '/settings/theme': t('nav.theme_settings'),
+    '/settings/ui': t('nav.ui_settings'),
+    '/settings/users': t('nav.user_management'),
+    '/help': t('nav.help_center'),
+    '/help/faq': t('nav.faq'),
+    '/help/support': t('nav.support'),
+    '/help/docs': t('nav.docs')
+  }
+  return titles[route.path] || 'Page'
+})
+
+const currentPageTitle = computed(() => pageTitle.value)
+
+const breadcrumbItems = computed(() => {
+  const pathSegments = route.path.split('/').filter(segment => segment)
+  const items = []
+  
+  let currentPath = ''
+  for (let i = 0; i < pathSegments.length; i++) {
+    currentPath += '/' + pathSegments[i]
+    
+    const segmentTitles = {
+      '/dashboard': t('nav.dashboards'),
+      '/dashboard/analytics': t('nav.analytics'),
+      '/dashboard/crm': t('nav.crm'),
+      '/dashboard/ecommerce': t('nav.ecommerce'),
+      '/settings': t('nav.settings'),
+      '/settings/general': t('nav.general_settings'),
+      '/settings/theme': t('nav.theme_settings'),
+      '/settings/ui': t('nav.ui_settings'),
+      '/settings/users': t('nav.user_management'),
+      '/help': t('nav.help_center'),
+      '/help/faq': t('nav.faq'),
+      '/help/support': t('nav.support'),
+      '/help/docs': t('nav.docs')
+    }
+    
+    const title = segmentTitles[currentPath] || pathSegments[i]
+    
+    items.push({
+      name: title,
+      href: currentPath
+    })
+  }
+  
+  return items
+})
 
 const showSearch = ref(false)
 const showLanguage = ref(false)
