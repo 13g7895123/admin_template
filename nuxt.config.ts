@@ -15,5 +15,11 @@ export default defineNuxtConfig({
     classPrefix: '',
     classSuffix: '',
     storageKey: 'nuxt-color-mode'
-  }
+  },
+  // Disable problematic nuxt-icon server bundle
+  icon: {
+    serverBundle: false
+  },
+  // Alternative: disable icon module entirely if still causing issues
+  // icon: false
 })
