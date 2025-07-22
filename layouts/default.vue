@@ -2,10 +2,10 @@
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <AppSidebar />
     <div 
-      class="min-h-screen transition-all duration-300 flex flex-col"
-      :class="[
-        'lg:' + (sidebarCollapsed ? 'ml-20' : 'ml-70')
-      ]"
+      class="min-h-screen flex flex-col main-content-area"
+      :class="{
+        'sidebar-collapsed': sidebarCollapsed
+      }"
     >
       <AppNavbar />
       <AppBreadcrumb />

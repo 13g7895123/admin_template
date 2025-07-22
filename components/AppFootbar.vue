@@ -3,26 +3,26 @@
     <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
       <!-- Left side - Copyright -->
       <div class="flex items-center space-x-4">
-        <span>&copy; 2024 Admin Template. All rights reserved.</span>
+        <span>{{ t('footer.copyright') }}</span>
       </div>
       
       <!-- Right side - Version/Links -->
       <div class="flex items-center space-x-4">
-        <span>Version 1.0.0</span>
+        <span>{{ t('common.version') }} 1.0.0</span>
         <span class="w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
         <a 
           href="#" 
           class="hover:text-primary-500 transition-colors duration-200"
           @click.prevent="$emit('privacy')"
         >
-          Privacy Policy
+          {{ t('footer.privacy_policy') }}
         </a>
         <a 
           href="#" 
           class="hover:text-primary-500 transition-colors duration-200"
           @click.prevent="$emit('terms')"
         >
-          Terms of Service
+          {{ t('footer.terms_of_service') }}
         </a>
       </div>
     </div>
@@ -30,5 +30,6 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
 defineEmits(['privacy', 'terms'])
 </script>

@@ -2,7 +2,7 @@
   <div>
     <!-- Desktop Sidebar -->
     <aside
-      class="fixed top-0 left-0 h-full bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 z-40 hidden lg:block"
+      class="fixed top-0 left-0 h-full bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 z-40 hidden lg:block flex flex-col"
       :class="[
         sidebarCollapsed ? 'w-20' : 'w-70'
       ]"
@@ -59,7 +59,7 @@
 
     <!-- Mobile Sidebar -->
     <aside
-      class="fixed top-0 left-0 h-full w-70 bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 z-50 lg:hidden"
+      class="fixed top-0 left-0 h-full w-70 bg-white dark:bg-gray-800 shadow-lg transition-transform duration-300 z-50 lg:hidden flex flex-col"
       :class="[
         sidebarMobileOpen ? 'translate-x-0' : '-translate-x-full'
       ]"

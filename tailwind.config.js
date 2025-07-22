@@ -8,6 +8,14 @@ module.exports = {
     "./nuxt.config.{js,ts}",
     "./app.vue"
   ],
+  safelist: [
+    'ml-20',
+    'ml-70', 
+    'lg:ml-20',
+    'lg:ml-70',
+    'w-20',
+    'w-70'
+  ],
   darkMode: 'class',
   theme: {
     extend: {

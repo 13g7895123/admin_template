@@ -40,6 +40,22 @@ body {
   width: var(--sidebar-width);
 }
 
+/* Main content area positioning */
+.main-content-area {
+  margin-left: 0;
+}
+
+@media (min-width: 1024px) {
+  .main-content-area {
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.3s ease;
+  }
+  
+  .main-content-area.sidebar-collapsed {
+    margin-left: var(--sidebar-collapsed-width);
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar-mobile {
     transform: translateX(-100%);

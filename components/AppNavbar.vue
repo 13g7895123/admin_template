@@ -72,8 +72,11 @@
           class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 relative"
         >
           <BellIcon class="w-5 h-5" />
-          <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-            <span class="text-xs text-white font-bold">3</span>
+          <span 
+            v-if="unreadCount > 0"
+            class="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 rounded-full flex items-center justify-center text-xs text-white font-bold"
+          >
+            {{ unreadCount > 99 ? '99+' : unreadCount }}
           </span>
         </button>
 
@@ -88,20 +91,67 @@
         >
           <div
             v-if="showNotifications"
-            class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+            class="absolute right-0 top-full mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
           >
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 class="font-semibold text-gray-900 dark:text-white">通知</h3>
-            </div>
-            <div class="max-h-64 overflow-y-auto">
-              <div
-                v-for="notification in notifications"
-                :key="notification.id"
-                class="p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-              >
-                <p class="text-sm text-gray-900 dark:text-white">{{ notification.title }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ notification.time }}</p>
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 class="font-semibold text-gray-900 dark:text-white">{{ t('notifications.title') }}</h3>
+              <div class="flex items-center space-x-2">
+                <button
+                  @click="markAllAsRead"
+                  class="text-xs text-primary-500 hover:text-primary-600 transition-colors duration-200"
+                >
+                  {{ t('notifications.mark_all_read') }}
+                </button>
               </div>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+              <div
+                v-for="notification in recentNotifications"
+                :key="notification.id"
+                class="p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+                :class="{ 'bg-blue-50 dark:bg-blue-900/20': !notification.read }"
+                @click="markAsRead(notification.id)"
+              >
+                <div class="flex items-start space-x-3">
+                  <div 
+                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+                    :class="{
+                      'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400': notification.priority === 'high',
+                      'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400': notification.priority === 'medium',
+                      'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400': notification.priority === 'low'
+                    }"
+                  >
+                    <component :is="getNotificationIcon(notification.icon)" class="w-4 h-4" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                      {{ typeof notification.title === 'string' && notification.title.includes('.') ? t(notification.title) : notification.title }}
+                    </p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{{ notification.message }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ notificationsStore.getTimeAgo(notification.time) }}</p>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <div
+                      v-if="!notification.read"
+                      class="w-2 h-2 bg-primary-500 rounded-full"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div
+                v-if="recentNotifications.length === 0"
+                class="p-8 text-center text-gray-500 dark:text-gray-400"
+              >
+                {{ t('notifications.no_notifications') }}
+              </div>
+            </div>
+            <div class="p-3 border-t border-gray-200 dark:border-gray-700">
+              <button
+                @click="clearReadNotifications"
+                class="w-full text-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
+              >
+                {{ t('notifications.clear_all') }}
+              </button>
             </div>
           </div>
         </transition>
@@ -139,21 +189,21 @@
               class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
               @click="closeUserMenu"
             >
-              個人資料
+              {{ t('common.profile') }}
             </NuxtLink>
             <NuxtLink
               to="/settings"
               class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
               @click="closeUserMenu"
             >
-              設定
+              {{ t('common.settings') }}
             </NuxtLink>
             <hr class="my-1 border-gray-200 dark:border-gray-700" />
             <button
               @click="logout"
               class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             >
-              登出
+              {{ t('common.logout') }}
             </button>
           </div>
         </transition>
@@ -183,7 +233,7 @@
               ref="searchInput"
               v-model="searchQuery"
               type="text"
-              placeholder="搜尋..."
+              :placeholder="t('common.search') + '...'"
               class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             />
           </div>
@@ -201,11 +251,21 @@ import {
   SunIcon,
   MoonIcon,
   BellIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  ExclamationCircleIcon,
+  UserPlusIcon,
+  DocumentTextIcon,
+  ShieldExclamationIcon,
+  InformationCircleIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/vue/24/outline'
 
+const { t, locale, locales } = useI18n()
 const sidebarStore = useSidebarStore()
 const { toggleMobileSidebar } = sidebarStore
+
+const notificationsStore = useNotificationsStore()
+const { recentNotifications, unreadCount, markAsRead, markAllAsRead, clearReadNotifications } = notificationsStore
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
@@ -217,17 +277,7 @@ const showUserMenu = ref(false)
 const searchQuery = ref('')
 const searchInput = ref(null)
 
-const languages = [
-  { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' }
-]
-
-const notifications = [
-  { id: 1, title: '新的系統更新可用', time: '5分鐘前' },
-  { id: 2, title: '用戶註冊通知', time: '10分鐘前' },
-  { id: 3, title: '每日報告已生成', time: '1小時前' }
-]
+const languages = computed(() => locales.value)
 
 const toggleSearch = () => {
   showSearch.value = !showSearch.value
@@ -250,7 +300,7 @@ const toggleLanguage = () => {
 }
 
 const selectLanguage = (lang) => {
-  console.log('Language selected:', lang)
+  locale.value = lang.code
   showLanguage.value = false
 }
 
@@ -279,6 +329,18 @@ const logout = () => {
   showUserMenu.value = false
 }
 
+const getNotificationIcon = (iconName) => {
+  const iconComponents = {
+    ExclamationCircleIcon,
+    UserPlusIcon,
+    DocumentTextIcon,
+    ShieldExclamationIcon,
+    InformationCircleIcon,
+    WrenchScrewdriverIcon
+  }
+  return iconComponents[iconName] || InformationCircleIcon
+}
+
 // Close dropdowns when clicking outside
 onMounted(() => {
   document.addEventListener('click', (e) => {
@@ -288,5 +350,8 @@ onMounted(() => {
       showUserMenu.value = false
     }
   })
+  
+  // Start real-time notifications simulation
+  notificationsStore.simulateRealTimeNotifications()
 })
 </script>
