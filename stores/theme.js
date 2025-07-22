@@ -42,17 +42,18 @@ export const useThemeStore = defineStore('theme', () => {
   const setPrimaryColor = (color) => {
     primaryColor.value = color
     
-    // Set the main primary color
-    document.documentElement.style.setProperty('--primary-color', color)
-    
-    // Generate and set color variations
-    const variations = generateColorVariations(color)
-    Object.entries(variations).forEach(([key, value]) => {
-      document.documentElement.style.setProperty(`--primary-${key}`, value)
-    })
-    
-    // Store in localStorage for persistence
+    // Only manipulate DOM on client side
     if (process.client) {
+      // Set the main primary color
+      document.documentElement.style.setProperty('--primary-color', color)
+      
+      // Generate and set color variations
+      const variations = generateColorVariations(color)
+      Object.entries(variations).forEach(([key, value]) => {
+        document.documentElement.style.setProperty(`--primary-${key}`, value)
+      })
+      
+      // Store in localStorage for persistence
       localStorage.setItem('admin-template-primary-color', color)
     }
   }

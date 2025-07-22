@@ -11,10 +11,4 @@ useHead({
     { name: 'description', content: 'Modern admin template built with Nuxt 3' }
   ]
 })
-
-// Initialize theme on app startup
-const themeStore = useThemeStore()
-onMounted(() => {
-  themeStore.initializeTheme()
-})
 </script>
