@@ -425,8 +425,10 @@ const closeUserMenu = () => {
   showUserMenu.value = false
 }
 
+const authStore = useAuthStore()
+
 const logout = () => {
-  console.log('Logout clicked')
+  authStore.logout()
   showUserMenu.value = false
 }
 
