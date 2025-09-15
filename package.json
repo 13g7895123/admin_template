@@ -3,8 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "nuxt dev --port 9117",
+    "dev:local": "cross-env NODE_ENV=development API_BASE_URL=http://localhost:9217/api nuxt dev --port 9117",
+    "dev:production": "cross-env NODE_ENV=production API_BASE_URL=https://promotion.mercylife.cc/api nuxt dev --port 9117",
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "build:production": "cross-env NODE_ENV=production API_BASE_URL=https://promotion.mercylife.cc/api nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -23,6 +26,7 @@
   "devDependencies": {
     "@nuxt/devtools": "^1.5.2",
     "@nuxt/kit": "^3.13.0",
+    "cross-env": "^7.0.3",
     "typescript": "^5.6.3"
   }
 }
